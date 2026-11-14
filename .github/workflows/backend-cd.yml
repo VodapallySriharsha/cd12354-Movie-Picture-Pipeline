@@ -10,6 +10,9 @@ on:
 
   workflow_dispatch:
 
+env:
+  ECR_REPOSITORY: backend
+
 jobs:
   lint:
     name: Backend Lint
@@ -102,17 +105,17 @@ jobs:
       - name: Tag Docker image with Git SHA
         run: |
           docker tag mp-backend:latest \
-            ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ steps.set-tag.outputs.image_tag }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.set-tag.outputs.image_tag }}
 
       - name: Push Docker image to ECR
         run: |
           docker push \
-            ${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ steps.set-tag.outputs.image_tag }}
+            ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.set-tag.outputs.image_tag }}
 
       - name: Set image URI output
         id: set-image
         run: |
-          echo "image_uri=${{ steps.ecr-login.outputs.registry }}/${{ vars.ECR_REPOSITORY }}" >> "$GITHUB_OUTPUT"
+          echo "image_uri=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy Backend to Kubernetes
