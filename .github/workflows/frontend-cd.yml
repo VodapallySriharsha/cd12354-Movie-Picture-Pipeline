@@ -70,7 +70,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
+            --build-arg REACT_APP_MOVIE_API_URL=${{ vars.REACT_APP_MOVIE_API_URL }} \
             --tag mp-frontend:latest \
             ./starter/frontend
 
