@@ -34,6 +34,9 @@ jobs:
       - name: Install Pipenv
         run: pip install pipenv
 
+      - name: Install system build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev
+
       - name: Install dependencies
         run: pipenv install --dev
 
@@ -59,6 +62,9 @@ jobs:
 
       - name: Install Pipenv
         run: pip install pipenv
+
+      - name: Install system build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev
 
       - name: Install dependencies
         run: pipenv install
