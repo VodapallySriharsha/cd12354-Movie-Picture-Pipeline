@@ -70,7 +70,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg REACT_APP_MOVIE_API_URL=${{ vars.REACT_APP_MOVIE_API_URL }} \
+            --build-arg REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} \
             --tag mp-frontend:latest \
             ./starter/frontend
 
@@ -123,3 +123,25 @@ jobs:
         working-directory: starter/frontend/k8s
         run: |
           kustomize build | kubectl apply -f -
+
+      # Verify Kubernetes deployment
+      - name: Verify Kubernetes deployment
+        run: |
+          kubectl rollout status deployment/frontend --timeout=180s || true
+
+          echo "----- Logging - kubectl get all ---- "
+          kubectl get all
+
+          echo "----- Logging - kubectl describe deploy ----- "
+          kubectl describe deploy frontend
+
+      # Verify Frontend ECR image
+      - name: Verify Frontend ECR image
+        run: |
+          echo "----- Logging - Frontend ECR Image Details ----- "
+
+          AWS_PAGER="" aws ecr describe-images \
+            --repository-name frontend \
+            --region "$AWS_REGION" \
+            --query 'sort_by(imageDetails,&imagePushedAt)[-1].{Tags:imageTags,Digest:imageDigest,PushedAt:imagePushedAt}' \
+            --output table
